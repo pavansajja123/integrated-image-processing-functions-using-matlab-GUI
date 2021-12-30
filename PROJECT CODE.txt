@@ -1,0 +1,277 @@
+function varargout = GUI_IP(varargin)
+
+gui_Singleton = 1;
+
+gui_State = struct('gui_Name',       mfilename, ...
+                   'gui_Singleton',  gui_Singleton, ...
+                   'gui_OpeningFcn', @GUI_IP_OpeningFcn, ...
+                   'gui_OutputFcn',  @GUI_IP_OutputFcn, ...
+                   'gui_LayoutFcn',  [] , ...
+                   'gui_Callback',   []);
+if nargin && ischar(varargin{1})
+    gui_State.gui_Callback = str2func(varargin{1});
+end
+
+if nargout
+    [varargout{1:nargout}] = gui_mainfcn(gui_State, varargin{:});
+else
+    gui_mainfcn(gui_State, varargin{:});
+end
+
+
+
+function GUI_IP_OpeningFcn(hObject, eventdata, handles, varargin)
+
+handles.output = hObject;
+
+guidata(hObject, handles);
+
+function varargout = GUI_IP_OutputFcn(hObject, eventdata, handles) 
+
+
+varargout{1} = handles.output;
+
+
+% --- Executes on button press in UPLOADIM.
+function UPLOADIM_Callback(hObject, eventdata, handles)
+
+a=uigetfile('.jpg')
+a=imread(a);
+axes(handles.axes1);
+imshow(a);
+setappdata(0,'a',a)
+
+
+% --- Executes on button press in HIST.
+function HIST_Callback(hObject, eventdata, handles)
+
+a=getappdata(0,'a');
+ahist=a;
+ahist=rgb2gray(ahist);
+
+imhist(ahist);
+img_adj = imadjust(ahist, [0.4,0.86],[0.0,1.0]);
+axes(handles.axes1);
+
+ imhist(ahist);
+
+
+% --- Executes on button press in BINIMAGE.
+function BINIMAGE_Callback(hObject, eventdata, handles)
+% hObject    handle to BINIMAGE (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+a=getappdata(0,'a');
+abw=im2bw(a);
+axes(handles.axes1);
+imshow(abw)
+
+
+% --- Executes on button press in RGB2GRAY.
+function RGB2GRAY_Callback(hObject, eventdata, handles)
+% hObject    handle to RGB2GRAY (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+
+a=getappdata(0,'a');
+agray=rgb2gray(a);
+axes(handles.axes1);
+imshow(agray);
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in reset.
+function reset_Callback(hObject, eventdata, handles)
+% hObject    handle to reset (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+a=getappdata(0,'a');
+axes(handles.axes1);
+imshow(a);
+
+
+% --- Executes on button press in CMPIMG.
+function CMPIMG_Callback(hObject, eventdata, handles)
+% hObject    handle to CMPIMG (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+a=getappdata(0,'a');
+acomp=a;
+acomp=imcomplement(acomp);
+axes(handles.axes1);
+imshow(acomp);
+
+
+% --- Executes on button press in EDGEDECT.
+function EDGEDECT_Callback(hObject, eventdata, handles)
+% hObject    handle to EDGEDECT (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+a=getappdata(0,'a');
+aedge=a;
+aedge=rgb2gray(aedge);
+aedge=edge(aedge,'Canny');
+axes(handles.axes1);
+imshow(aedge);
+
+
+% --- Executes on button press in ROTCLOCK.
+function ROTCLOCK_Callback(hObject, eventdata, handles)
+% hObject    handle to ROTCLOCK (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+a=getappdata(0,'a');
+aclock=a;
+aclock=imrotate(aclock,270);
+axes(handles.axes1);
+imshow(aclock);
+
+
+% --- Executes on button press in ROTATE_AC.
+function ROTATE_AC_Callback(hObject, eventdata, handles)
+% hObject    handle to ROTATE_AC (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+a=getappdata(0,'a');
+aclock=a;
+aclock=imrotate(aclock,90);
+
+axes(handles.axes1);
+imshow(aclock);
+
+
+
+% --- Executes on button press in grayadjust.
+function grayadjust_Callback(hObject, eventdata, handles)
+% hObject    handle to grayadjust (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+a=getappdata(0,'a');
+img=a;
+gray = rgb2gray(img);
+adj_img = imadjust(gray, [0.3,0.7],[]);
+axes(handles.axes1);
+imshow(adj_img);
+
+
+% --- Executes on button press in noisergb.
+function noisergb_Callback(hObject, eventdata, handles)
+% hObject    handle to noisergb (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+a=getappdata(0,'a');
+I=a;
+J = imnoise(I,'salt & pepper',0.2);
+axes(handles.axes1);
+imshow(J);
+
+
+
+
+% --- Executes on button press in RGB_nfilter.
+function RGB_nfilter_Callback(hObject, eventdata, handles)
+% hObject    handle to RGB_nfilter (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+% filter each channel separately
+a=getappdata(0,'a');
+I=a;
+J = imnoise(I,'salt & pepper',0.2);
+
+r = medfilt2(J(:, :, 1), [3 3]);
+g = medfilt2(J(:, :, 2), [3 3]);
+b = medfilt2(J(:, :, 3), [3 3]);
+
+% reconstruct the image from r,g,b channels
+K = cat(3, r, g, b);
+
+axes(handles.axes1);
+imshow(K);
+
+
+% --- Executes on button press in adjust_hist.
+function adjust_hist_Callback(hObject, eventdata, handles)
+% hObject    handle to adjust_hist (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+a=getappdata(0,'a');
+img_eq = histeq(a);
+axes(handles.axes1);
+imshow(img_eq);
+
+
+% --- Executes on button press in detectFace.
+function detectFace_Callback(hObject, eventdata, handles)
+% hObject    handle to detectFace (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+FDetect = vision.CascadeObjectDetector;
+a=getappdata(0,'a');
+I=a;
+BB = step(FDetect,I);
+imshow(I); hold on
+for i = 1:size(BB,1)
+    rectangle('Position',BB(i,:),'LineWidth',5,'LineStyle','-','EdgeColor','r');
+end
+% title('Face Detection');
+hold off;
+
+
+% --- Executes on button press in discardBackground.
+function discardBackground_Callback(hObject, eventdata, handles)
+% hObject    handle to discardBackground (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+a=getappdata(0,'a');
+grayImage = a;
+imshow(grayImage, []);
+set(gcf, 'Position', get(0,'Screensize')); % Maximize figure.
+message = sprintf('Left click and hold to begin drawing.\nSimply lift the mouse button to finish');
+uiwait(msgbox(message));
+hFH = imfreehand();
+% Create a binary image ("mask") from the ROI object.
+binaryImage = hFH.createMask();
+structBoundaries = bwboundaries(binaryImage);
+xy=structBoundaries{1}; % Get n by 2 array of x,y coordinates.
+x = xy(:, 2); % Columns.
+y = xy(:, 1); % Rows.
+plot(x, y, 'LineWidth', 2);
+drawnow; % Force it to draw immediately.
+blackMaskedImage = grayImage;
+% blackMaskedImage(~binaryImage) = 0;
+maskedImage = bsxfun(@times, grayImage, cast(binaryImage,class(grayImage)));
+imshow(maskedImage);
+
+
+% --- Executes on button press in eyesDetection.
+function eyesDetection_Callback(hObject, eventdata, handles)
+% hObject    handle to eyesDetection (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+EyeDetect = vision.CascadeObjectDetector('EyePairBig');
+a=getappdata(0,'a');
+I=a;
+BB=step(EyeDetect,I);
+imshow(I);
+hold on
+for i = 1:size(BB,1)
+ rectangle('Position',BB(i,:),'LineWidth',4,'LineStyle','-','EdgeColor','b');
+end
+hold off;
+
+
+% --- Executes on button press in noseDetection.
+function noseDetection_Callback(hObject, eventdata, handles)
+% hObject    handle to noseDetection (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+NoseDetect = vision.CascadeObjectDetector('Nose','MergeThreshold',16);
+a=getappdata(0,'a');
+I=a;
+BB=step(NoseDetect,I);
+
+imshow(I); hold on
+for i = 1:size(BB,1)
+    rectangle('Position',BB(i,:),'LineWidth',4,'LineStyle','-','EdgeColor','b');
+end
+title('Nose Detection');
+hold off;
